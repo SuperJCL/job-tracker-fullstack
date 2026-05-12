@@ -3,8 +3,9 @@
 
 import { useState } from "react";
 import ApplicationCard from "@/components/ApplicationCard";
-import type { Application } from "@/types/application";
+import type { Application, ApplicationStatus } from "@/types/application";
 import FilterBar from "@/components/FilterBar";
+import StatBoard from "@/components/StatBoard";
 
 export default function ApplicationsPage() {
 	const [applications, setApplications] = useState<Application[]>([
@@ -29,7 +30,7 @@ export default function ApplicationsPage() {
 	]);
 	const [company, setCompany] = useState("");
 	const [role, setRole] = useState("");				//申请工作类别
-	const [state, setState] = useState("Unknown");	//申请状态，默认为Unknown
+	const [status, setStatus] = useState<ApplicationStatus>("Unknown");	//申请状态，默认为Unknown
 	const [filter, setFilter] = useState("All");		//过滤条件，默认为All
 	const [search, setSearch] = useState("");
 
@@ -46,10 +47,10 @@ export default function ApplicationsPage() {
 			id: Date.now().toString(),
 			company,
 			role,
-			status: state,
+			status: status,
 		};
 
-		setApplications([...applications, newApplication]);
+		setApplications([newApplication, ...applications]);//将新申请添加到列表顶部
 		setCompany("");
 		setRole("");
 	};
@@ -62,19 +63,23 @@ export default function ApplicationsPage() {
 		setApplications(applications.filter((app) => app.id !== id)); //删除指定id的申请
 	}
 
+	/**
+	 * 根据filter和search条件过滤申请列表
+	 * @returns 过滤后的申请列表
+	 */
 	const filteredApplications =
 		filter === "All"
 			? applications
-			: applications.filter((app) =>{//第一层条件过滤-filter
-				if (filter==='All') {
+			: applications.filter((app) => {//第一层条件过滤-filter
+				if (filter === 'All') {
 					return true;
 				};
 				return app.status === filter;
-			}).filter((app) =>{//第二层条件过滤-search
-				if (filter==='All') return true;
+			}).filter((app) => {//第二层条件过滤-search
+				if (filter === 'All') return true;
 				const keyword = search.toLowerCase();
 				return (app.company.toLowerCase().includes(keyword) ||
-				app.role.toLowerCase().includes(keyword))
+					app.role.toLowerCase().includes(keyword))
 			});
 
 	return (
@@ -106,8 +111,8 @@ export default function ApplicationsPage() {
 				/>
 
 				<select
-					value={state}
-					onChange={(e) => setState(e.target.value)}>
+					value={status}
+					onChange={(e) => setStatus(e.target.value as ApplicationStatus)}>
 					<option value="Unknown">Unknown</option>
 					<option value="Applied">Applied</option>
 					<option value="Wishlist">Wishlist</option>
@@ -117,26 +122,61 @@ export default function ApplicationsPage() {
 					<option value="Rejected">Rejected</option>
 				</select>
 
-				<button
-					onClick={handleAddApplication}
-					className="rounded bg-black px-4 py-2 text-white"
-				>
-					Add Application
-				</button>
+				<div className="mt-4 flex justify-end">
+					<button
+						onClick={handleAddApplication}
+						className="rounded bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-gray-300"
+						disabled={!company.trim() || !role.trim()}
+					>
+						Add Application
+					</button>
+				</div>
 			</div>
 
 			{/** FilterBar **/}
 			<FilterBar filter={filter} onChange={setFilter} />
+			<div className="mb-6 flex gap-4">
+				<StatBoard label="Total" value={applications.length} />
+
+				<StatBoard
+					label="Applied"
+					value={applications.filter((app) => app.status === "Applied").length}
+				/>
+				<StatBoard
+					label="Wishlist"
+					value={applications.filter((app) => app.status === "Wishlist").length}
+				/>
+				<StatBoard
+					label="OA"
+					value={applications.filter((app) => app.status === "OA").length}
+				/>
+				<StatBoard
+					label="Interview"
+					value={applications.filter((app) => app.status === "Interview").length}
+				/>
+				<StatBoard
+					label="Offer"
+					value={applications.filter((app) => app.status === "Offer").length}
+				/>
+				<StatBoard
+					label="Rejected"
+					value={applications.filter((app) => app.status === "Rejected").length}
+				/>
+			</div>
 
 			{/* 显示申请列表 */}
 			<div className="space-y-4">
-				{filteredApplications.map((app) => (
-					<ApplicationCard
-						key={app.id}
-						app={app}
-						onDelete={handleDeleteApplication}
-					/>
-				))}
+				{filteredApplications.length === 0 ?
+					<div className="rounded-lg border border-dashed p-8 text-center text-gray-500">
+						No applications found.
+					</div> :
+					filteredApplications.map((app) => (
+						<ApplicationCard
+							key={app.id}
+							app={app}
+							onDelete={handleDeleteApplication}
+						/>
+					))}
 			</div>
 		</main>
 	);

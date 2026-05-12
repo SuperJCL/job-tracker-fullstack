@@ -8,6 +8,7 @@ A simple web app to track job applications.
 - Delete application
 - Filter by status
 - Search by company or role
+- Dashboard
 
 ## Tech Stack
 
