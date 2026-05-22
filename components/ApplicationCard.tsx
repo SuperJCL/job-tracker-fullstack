@@ -12,7 +12,7 @@ const statusStyles: Record<Application["status"], string> = {
   Offer: "bg-green-100 text-green-700",
   Rejected: "bg-red-100 text-red-700",
   Unknown: "bg-gray-100 text-gray-700",
-  OA: "bg-yellow-100 text-yellow-700",
+  OA: "bg-purple-100 text-purple-700",
 };
 
 export default function ApplicationCard({ app, onDelete }: Props) {
@@ -22,7 +22,7 @@ export default function ApplicationCard({ app, onDelete }: Props) {
         <h2 className="text-lg font-semibold">{app.company}</h2>
         <p>{app.role}</p>
         <span
-          className={`rounded-full px-3 py-1 text-sm font-medium ${
+          className={`mt-2 inline-block rounded-full px-3 py-1 text-sm font-medium ${
             statusStyles[app.status]
           }`}
         >

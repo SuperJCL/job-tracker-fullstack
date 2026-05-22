@@ -6,6 +6,7 @@ import ApplicationCard from "@/components/ApplicationCard";
 import type { Application, ApplicationStatus } from "@/types/application";
 import FilterBar from "@/components/FilterBar";
 import StatBoard from "@/components/StatBoard";
+import ApplicationForm from "@/components/ApplicationForm";
 
 export default function ApplicationsPage() {
 	const [applications, setApplications] = useState<Application[]>([
@@ -28,9 +29,7 @@ export default function ApplicationsPage() {
 			status: "Interview",
 		}
 	]);
-	const [company, setCompany] = useState("");
-	const [role, setRole] = useState("");				//申请工作类别
-	const [status, setStatus] = useState<ApplicationStatus>("Unknown");	//申请状态，默认为Unknown
+
 	const [filter, setFilter] = useState("All");		//过滤条件，默认为All
 	const [search, setSearch] = useState("");
 
@@ -38,21 +37,19 @@ export default function ApplicationsPage() {
 	 * 添加新的申请
 	 * @returns 
 	 */
-	const handleAddApplication = () => {
-		if (!company.trim() || !role.trim()) {  //去掉字符串前后空格，如果公司或职位为空，则不添加
-			return;
-		}
-
+	const handleAddApplication = (
+		company: string,
+		role: string,
+		status: string
+	) => {
 		const newApplication: Application = {
 			id: Date.now().toString(),
 			company,
 			role,
-			status: status,
+			status: status as ApplicationStatus,
 		};
 
-		setApplications([newApplication, ...applications]);//将新申请添加到列表顶部
-		setCompany("");
-		setRole("");
+		setApplications([...applications, newApplication]);
 	};
 
 	/**
@@ -67,24 +64,25 @@ export default function ApplicationsPage() {
 	 * 根据filter和search条件过滤申请列表
 	 * @returns 过滤后的申请列表
 	 */
-	const filteredApplications =
-		filter === "All"
-			? applications
-			: applications.filter((app) => {//第一层条件过滤-filter
-				if (filter === 'All') {
-					return true;
-				};
-				return app.status === filter;
-			}).filter((app) => {//第二层条件过滤-search
-				if (filter === 'All') return true;
-				const keyword = search.toLowerCase();
-				return (app.company.toLowerCase().includes(keyword) ||
-					app.role.toLowerCase().includes(keyword))
-			});
+	const filteredApplications = applications.filter((app) => {//第一层条件过滤-filter
+		if (filter === 'All') {
+			return true;
+		};
+		return app.status === filter;
+	}).filter((app) => {//第二层条件过滤-search
+		const keyword = search.toLowerCase();
+		return (app.company.toLowerCase().includes(keyword) ||
+			app.role.toLowerCase().includes(keyword))
+	});
 
 	return (
 		<main className="p-8">
-			<h1 className="mb-6 text-2xl font-bold">Applications</h1>
+			<header className="mb-8">
+				<h1 className="text-3xl font-bold">Job Application Tracker</h1>
+				<p className="mt-2 text-gray-500">
+					Track your internship and job applications in one place.
+				</p>
+			</header>
 			<input
 				type="text"
 				placeholder="Search by company or role..."
@@ -93,91 +91,72 @@ export default function ApplicationsPage() {
 				className="mb-4 w-full rounded border p-2"
 			/>
 
-			<div className="mb-6 space-y-3 rounded-lg border p-4">
-				<input
-					type="text"
-					placeholder="Company"
-					value={company}
-					onChange={(e) => setCompany(e.target.value)}
-					className="w-full rounded border p-2"
-				/>
+			<section className="mb-8">
+				<ApplicationForm onAdd={handleAddApplication} />
+			</section>
 
-				<input
-					type="text"
-					placeholder="Role"
-					value={role}
-					onChange={(e) => setRole(e.target.value)}
-					className="w-full rounded border p-2"
-				/>
+			<section>
+				<div className="mb-4 space-y-3">
+					<FilterBar filter={filter} onChange={setFilter} />
 
-				<select
-					value={status}
-					onChange={(e) => setStatus(e.target.value as ApplicationStatus)}>
-					<option value="Unknown">Unknown</option>
-					<option value="Applied">Applied</option>
-					<option value="Wishlist">Wishlist</option>
-					<option value="OA">OA</option>
-					<option value="Interview">Interview</option>
-					<option value="Offer">Offer</option>
-					<option value="Rejected">Rejected</option>
-				</select>
+					<input
+						type="text"
+						placeholder="Search by company or role..."
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						className="w-full rounded border p-2"
+					/>
+					<div className="mb-6 flex gap-4">
+						<StatBoard label="Total" value={applications.length} />
 
-				<div className="mt-4 flex justify-end">
-					<button
-						onClick={handleAddApplication}
-						className="rounded bg-black px-4 py-2 text-white disabled:cursor-not-allowed disabled:bg-gray-300"
-						disabled={!company.trim() || !role.trim()}
-					>
-						Add Application
-					</button>
-				</div>
-			</div>
-
-			{/** FilterBar **/}
-			<FilterBar filter={filter} onChange={setFilter} />
-			<div className="mb-6 flex gap-4">
-				<StatBoard label="Total" value={applications.length} />
-
-				<StatBoard
-					label="Applied"
-					value={applications.filter((app) => app.status === "Applied").length}
-				/>
-				<StatBoard
-					label="Wishlist"
-					value={applications.filter((app) => app.status === "Wishlist").length}
-				/>
-				<StatBoard
-					label="OA"
-					value={applications.filter((app) => app.status === "OA").length}
-				/>
-				<StatBoard
-					label="Interview"
-					value={applications.filter((app) => app.status === "Interview").length}
-				/>
-				<StatBoard
-					label="Offer"
-					value={applications.filter((app) => app.status === "Offer").length}
-				/>
-				<StatBoard
-					label="Rejected"
-					value={applications.filter((app) => app.status === "Rejected").length}
-				/>
-			</div>
-
-			{/* 显示申请列表 */}
-			<div className="space-y-4">
-				{filteredApplications.length === 0 ?
-					<div className="rounded-lg border border-dashed p-8 text-center text-gray-500">
-						No applications found.
-					</div> :
-					filteredApplications.map((app) => (
-						<ApplicationCard
-							key={app.id}
-							app={app}
-							onDelete={handleDeleteApplication}
+						<StatBoard
+							label="Applied"
+							value={applications.filter((app) => app.status === "Applied").length}
 						/>
-					))}
-			</div>
+						<StatBoard
+							label="Wishlist"
+							value={applications.filter((app) => app.status === "Wishlist").length}
+						/>
+						<StatBoard
+							label="OA"
+							value={applications.filter((app) => app.status === "OA").length}
+						/>
+						<StatBoard
+							label="Interview"
+							value={applications.filter((app) => app.status === "Interview").length}
+						/>
+						<StatBoard
+							label="Offer"
+							value={applications.filter((app) => app.status === "Offer").length}
+						/>
+						<StatBoard
+							label="Rejected"
+							value={applications.filter((app) => app.status === "Rejected").length}
+						/>
+					</div>
+				</div>
+
+				{/* 显示申请列表 */}
+				<div className="space-y-4">
+					{filteredApplications.length === 0 ?
+						(
+							<div className="rounded-lg border border-dashed p-8 text-center">
+								<h2 className="text-lg font-semibold">No applications found</h2>
+								<p className="mt-2 text-sm text-gray-500">
+									Try changing your search keyword or status filter.
+								</p>
+							</div>
+						) :
+						filteredApplications.map((app) => (
+							<ApplicationCard
+								key={app.id}
+								app={app}
+								onDelete={handleDeleteApplication}
+							/>
+						))}
+				</div>
+			</section>
+
 		</main>
 	);
 }
