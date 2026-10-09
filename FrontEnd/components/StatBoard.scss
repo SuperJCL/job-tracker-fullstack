@@ -1,0 +1,23 @@
+.stat-board {
+  min-width: 0;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  &__label {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  &__value {
+    margin: 8px 0 0;
+    color: var(--foreground);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+  }
+}

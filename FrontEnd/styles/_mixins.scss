@@ -1,0 +1,6 @@
+//复用样式
+//可复用焦点样式
+@mixin focus-ring {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}

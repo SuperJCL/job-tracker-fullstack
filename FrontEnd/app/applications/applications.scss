@@ -1,0 +1,117 @@
+.application-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto; //居中
+  padding: 40px 32px 64px;
+
+  &__header {
+    margin-bottom: 28px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  &__description {
+    margin: 8px 0 0;
+    color: var(--muted-foreground);
+    font-size: 14px;
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  &__content {
+    min-width: 0;
+  }
+
+  &__toolbar {
+    display: flex;
+    flex-wrap: wrap; //工具栏空间不够时允许换行
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  &__search {
+    flex: 1; //搜索框可以伸展，占用剩余空间
+    min-width: 0;
+    max-width: 400px;
+    min-height: 36px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--foreground);
+    font: inherit;
+
+    &::placeholder {
+      //设置输入框占位符的样式
+      color: var(--muted-foreground);
+    }
+  }
+
+  &__results {
+    margin: 0 0 12px;
+    color: var(--muted-foreground);
+    font-size: 12px;
+  }
+
+  &__list {
+    display: grid;
+    gap: 8px;
+  }
+
+  &__empty {
+    padding: 48px 20px;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    text-align: center;
+  }
+
+  &__empty-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  &__empty-description {
+    margin: 8px 0 0;
+    color: var(--muted-foreground);
+    font-size: 13px;
+  }
+
+  &__form-section {
+    margin-top: 32px;
+  }
+
+  &__section-title {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 640px) {
+    //视口宽度不超过 640px 时应用里面的样式
+    padding: 24px 16px 40px;
+
+    &__title {
+      font-size: 24px;
+    }
+
+    &__search {
+      flex-basis: 100%;
+      max-width: none;
+    }
+  }
+}

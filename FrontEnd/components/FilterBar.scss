@@ -1,0 +1,28 @@
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &__label {
+    color: var(--muted-foreground);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  &__select {
+    min-height: 36px;
+    max-width: 100%;
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--foreground);
+    font: inherit;
+    font-size: 13px;
+    transition: border-color 150ms ease;
+
+    &:hover {
+      border-color: var(--muted-foreground);
+    }
+  }
+}

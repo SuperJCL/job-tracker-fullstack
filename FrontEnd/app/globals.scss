@@ -1,0 +1,25 @@
+@use "../styles/tokens";
+@use "../styles/mixins" as mixins;
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+button:not(:disabled),
+select {
+  cursor: pointer;
+}
+
+:where(button, input, select, textarea, a):focus-visible {
+  @include mixins.focus-ring;
+}
+
+::selection {
+  background: #e4defa;
+  color: var(--foreground);
+}

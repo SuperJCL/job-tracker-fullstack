@@ -1,0 +1,133 @@
+.application-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background: var(--muted);
+  }
+
+  &__avatar {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--primary);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__company {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  &__role {
+    margin: 4px 0 0;
+    color: var(--muted-foreground);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
+  &__status {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+
+    &::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    &--wishlist,
+    &--unknown {
+      background: #eef0f4;
+      color: #586174;
+    }
+
+    &--applied {
+      background: #eaf2ff;
+      color: #285bb5;
+    }
+
+    &--oa {
+      background: #f0eaff;
+      color: #7146b5;
+    }
+
+    &--interview {
+      background: #fff4dc;
+      color: #8a5b0a;
+    }
+
+    &--offer {
+      background: #e5f5eb;
+      color: #237548;
+    }
+
+    &--rejected {
+      background: #fdebed;
+      color: #b33d4c;
+    }
+  }
+
+  &__delete {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted-foreground);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+
+    &:hover {
+      border-color: #f2c6cd;
+      background: #fdebed;
+      color: #b33d4c;
+    }
+  }
+
+  @media (max-width: 640px) {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px;
+
+    &__info {
+      flex-basis: calc(100% - 52px);
+    }
+
+    &__status {
+      margin-left: 52px;
+    }
+
+    &__delete {
+      margin-left: auto;
+    }
+  }
+}

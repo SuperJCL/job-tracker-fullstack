@@ -3,6 +3,8 @@
 import type { ApplicationStatusFilter } from "@/types/application";
 import { isApplicationStatus } from "@/types/application";
 
+import "./FilterBar.scss";
+
 type Props = {
   filter: ApplicationStatusFilter;
   onChange: (value: ApplicationStatusFilter) => void;
@@ -10,10 +12,13 @@ type Props = {
 
 export default function FilterBar({ filter, onChange }: Props) {
   return (
-    <div className="mb-4 flex items-center gap-3">
-      <span className="text-sm font-medium">Filter:</span>
+    <div className="filter-bar">
+      <label htmlFor="application-status-filter" className="filter-bar__label">
+        Status
+      </label>
 
       <select
+        id="application-status-filter"
         value={filter}
         onChange={(e) => {
           const value = e.target.value;
@@ -22,9 +27,9 @@ export default function FilterBar({ filter, onChange }: Props) {
             onChange(value);
           }
         }}
-        className="rounded border p-2"
+        className="filter-bar__select"
       >
-        <option value="All">All</option>
+        <option value="All">All statuses</option>
         <option value="Wishlist">Wishlist</option>
         <option value="Applied">Applied</option>
         <option value="OA">OA</option>

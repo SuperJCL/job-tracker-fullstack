@@ -12,6 +12,8 @@ import StatBoard from "@/components/StatBoard";
 import ApplicationForm from "@/components/ApplicationForm";
 import { mockApplications } from "@/mock/applicationsMock";
 
+import "./applications.scss";
+
 export default function ApplicationsPage() {
   const [applications, setApplications] =
     useState<Application[]>(mockApplications); //初始化申请列表，使用mock数据
@@ -62,83 +64,82 @@ export default function ApplicationsPage() {
     });
 
   return (
-    <main className="application p-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold">Job Application Tracker</h1>
-        <p className="mt-2 text-gray-500">
-          Track your internship and job applications in one place.
+    <main className="application-page">
+      <header className="application-page__header">
+        <h1 className="application-page__title">Applications</h1>
+        <p className="application-page__description">
+          Your next opportunity starts here.
         </p>
       </header>
-      <input
-        type="text"
-        placeholder="Search by company or role..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 w-full rounded border p-2"
-      />
 
-      <section className="mb-8">
-        <ApplicationForm onAdd={addApplication} />
+      <section
+        className="application-page__stats"
+        aria-label="Application statistics"
+      >
+        <StatBoard label="Total" value={applications.length} />
+        <StatBoard
+          label="Wishlist"
+          value={applications.filter((app) => app.status === "Wishlist").length}
+        />
+        <StatBoard
+          label="Applied"
+          value={applications.filter((app) => app.status === "Applied").length}
+        />
+        <StatBoard
+          label="OA"
+          value={applications.filter((app) => app.status === "OA").length}
+        />
+        <StatBoard
+          label="Interview"
+          value={
+            applications.filter((app) => app.status === "Interview").length
+          }
+        />
+        <StatBoard
+          label="Offer"
+          value={applications.filter((app) => app.status === "Offer").length}
+        />
+        <StatBoard
+          label="Rejected"
+          value={applications.filter((app) => app.status === "Rejected").length}
+        />
+        <StatBoard
+          label="Unknown"
+          value={applications.filter((app) => app.status === "Unknown").length}
+        />
       </section>
 
-      <section>
-        <div className="mb-4 space-y-3">
-          <FilterBar filter={filter} onChange={setFilter} />
-
+      <section
+        className="application-page__content"
+        aria-label="Application list"
+      >
+        <div className="application-page__toolbar">
           <input
-            type="text"
+            type="search"
+            aria-label="Search applications by company or role"
             placeholder="Search by company or role..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded border p-2"
+            className="application-page__search"
           />
-          <div className="mb-6 flex gap-4">
-            <StatBoard label="Total" value={applications.length} />
 
-            <StatBoard
-              label="Applied"
-              value={
-                applications.filter((app) => app.status === "Applied").length
-              }
-            />
-            <StatBoard
-              label="Wishlist"
-              value={
-                applications.filter((app) => app.status === "Wishlist").length
-              }
-            />
-            <StatBoard
-              label="OA"
-              value={applications.filter((app) => app.status === "OA").length}
-            />
-            <StatBoard
-              label="Interview"
-              value={
-                applications.filter((app) => app.status === "Interview").length
-              }
-            />
-            <StatBoard
-              label="Offer"
-              value={
-                applications.filter((app) => app.status === "Offer").length
-              }
-            />
-            <StatBoard
-              label="Rejected"
-              value={
-                applications.filter((app) => app.status === "Rejected").length
-              }
-            />
-          </div>
+          <FilterBar filter={filter} onChange={setFilter} />
         </div>
 
-        {/* 显示申请列表 */}
-        <div className="space-y-4">
+        <p className="application-page__results" aria-live="polite">
+          {filteredApplications.length} of {applications.length} applications
+        </p>
+
+        <div className="application-page__list">
           {filteredApplications.length === 0 ? (
-            <div className="rounded-lg border border-dashed p-8 text-center">
-              <h2 className="text-lg font-semibold">No applications found</h2>
-              <p className="mt-2 text-sm text-gray-500">
-                Try changing your search keyword or status filter.
+            <div className="application-page__empty">
+              <h2 className="application-page__empty-title">
+                No applications found
+              </h2>
+              <p className="application-page__empty-description">
+                {applications.length === 0
+                  ? "Add your first application below to get started."
+                  : "Try changing your search keyword or status filter."}
               </p>
             </div>
           ) : (
@@ -151,6 +152,19 @@ export default function ApplicationsPage() {
             ))
           )}
         </div>
+      </section>
+
+      <section
+        className="application-page__form-section"
+        aria-labelledby="new-application-title"
+      >
+        <h2
+          id="new-application-title"
+          className="application-page__section-title"
+        >
+          Add application
+        </h2>
+        <ApplicationForm onAdd={addApplication} />
       </section>
     </main>
   );

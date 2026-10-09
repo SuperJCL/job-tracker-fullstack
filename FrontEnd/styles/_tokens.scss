@@ -1,0 +1,16 @@
+//Design tokens for the application
+//统一视觉数值
+//全局颜色变量
+:root {
+  color-scheme: light;
+
+  --background: #f8f9fb;
+  --foreground: #20212b;
+  --surface: #ffffff;
+  --muted: #f0f1f5;
+  --muted-foreground: #626575;
+  --border: #e3e5ec;
+  --primary: #6554c0;
+  --primary-hover: #5645ad;
+  --primary-foreground: #ffffff;
+}
