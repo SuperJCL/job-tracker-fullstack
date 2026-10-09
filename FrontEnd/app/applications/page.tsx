@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import ApplicationCard from "@/components/ApplicationCard";
-import type { Application, ApplicationStatus } from "@/types/application";
+import type {
+  Application,
+  CreateApplicationInput,
+  ApplicationStatusFilter,
+} from "@/types/application";
 import FilterBar from "@/components/FilterBar";
 import StatBoard from "@/components/StatBoard";
 import ApplicationForm from "@/components/ApplicationForm";
@@ -12,34 +16,28 @@ export default function ApplicationsPage() {
   const [applications, setApplications] =
     useState<Application[]>(mockApplications); //初始化申请列表，使用mock数据
 
-  const [filter, setFilter] = useState("All"); //过滤条件，默认为All
+  const [filter, setFilter] = useState<ApplicationStatusFilter>("All"); //仅允许传7种类型
   const [search, setSearch] = useState("");
 
   /**
    * 添加新的申请
    * @returns
    */
-  const handleAddApplication = (
-    company: string,
-    role: string,
-    status: string,
-  ) => {
+  const addApplication = (input: CreateApplicationInput) => {
     const newApplication: Application = {
-      id: Date.now().toString(),
-      company,
-      role,
-      status: status as ApplicationStatus,
+      ...input,
+      id: crypto.randomUUID(), //生成唯一id
     };
 
-    setApplications([...applications, newApplication]);
+    setApplications((prev) => [...prev, newApplication]);
   };
 
   /**
    * 删除指定id的申请
    * @param id 记录的id
    */
-  const handleDeleteApplication = (id: string) => {
-    setApplications(applications.filter((app) => app.id !== id)); //删除指定id的申请
+  const deleteApplication = (id: string) => {
+    setApplications((prev) => prev.filter((app) => app.id !== id));
   };
 
   /**
@@ -80,7 +78,7 @@ export default function ApplicationsPage() {
       />
 
       <section className="mb-8">
-        <ApplicationForm onAdd={handleAddApplication} />
+        <ApplicationForm onAdd={addApplication} />
       </section>
 
       <section>
@@ -148,7 +146,7 @@ export default function ApplicationsPage() {
               <ApplicationCard
                 key={app.id}
                 app={app}
-                onDelete={handleDeleteApplication}
+                onDelete={deleteApplication}
               />
             ))
           )}

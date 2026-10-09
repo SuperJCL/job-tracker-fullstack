@@ -1,8 +1,11 @@
 "use client";
 
+import type { ApplicationStatusFilter } from "@/types/application";
+import { isApplicationStatus } from "@/types/application";
+
 type Props = {
-  filter: string;
-  onChange: (value: string) => void;
+  filter: ApplicationStatusFilter;
+  onChange: (value: ApplicationStatusFilter) => void;
 };
 
 export default function FilterBar({ filter, onChange }: Props) {
@@ -12,7 +15,13 @@ export default function FilterBar({ filter, onChange }: Props) {
 
       <select
         value={filter}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          const value = e.target.value;
+
+          if (value === "All" || isApplicationStatus(value)) {
+            onChange(value);
+          }
+        }}
         className="rounded border p-2"
       >
         <option value="All">All</option>
@@ -22,6 +31,7 @@ export default function FilterBar({ filter, onChange }: Props) {
         <option value="Interview">Interview</option>
         <option value="Offer">Offer</option>
         <option value="Rejected">Rejected</option>
+        <option value="Unknown">Unknown</option>
       </select>
     </div>
   );

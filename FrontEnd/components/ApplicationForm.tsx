@@ -1,21 +1,30 @@
 "use client";
 
 import { useState } from "react";
+import type {
+  ApplicationStatus,
+  CreateApplicationInput,
+} from "@/types/application";
+import { isApplicationStatus } from "@/types/application";
 
 type Props = {
-  onAdd: (company: string, role: string, status: string) => void;
+  onAdd: (input: CreateApplicationInput) => void;
 };
 
 export default function ApplicationForm({ onAdd }: Props) {
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
-  const [status, setStatus] = useState("Applied");
-  const isFormValid = company.trim() && role.trim(); //表单验证：公司和职位不能为空（去掉前后空格）
+  const [status, setStatus] = useState<ApplicationStatus>("Applied");
+  const isFormValid = company.trim().length > 0 && role.trim().length > 0; //表单验证：公司和职位不能为空（去掉前后空格）
 
   const handleSubmit = () => {
-    if (!company.trim() || !role.trim()) return;
+    if (!isFormValid) return;
 
-    onAdd(company, role, status);
+    onAdd({
+      company: company.trim(),
+      role: role.trim(),
+      status,
+    });
 
     setCompany("");
     setRole("");
@@ -51,7 +60,13 @@ export default function ApplicationForm({ onAdd }: Props) {
 
         <select
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value;
+
+            if (isApplicationStatus(value)) {
+              setStatus(value);
+            }
+          }}
           className="w-full rounded border p-2"
         >
           <option value="Wishlist">Wishlist</option>
