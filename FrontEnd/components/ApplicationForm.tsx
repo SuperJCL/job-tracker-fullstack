@@ -6,6 +6,8 @@ import type {
   CreateApplicationInput,
 } from "@/types/application";
 import { isApplicationStatus } from "@/types/application";
+import type { SubmitEvent } from "react";
+import "./ApplicationForm.scss";
 
 type Props = {
   onAdd: (input: CreateApplicationInput) => void;
@@ -17,7 +19,11 @@ export default function ApplicationForm({ onAdd }: Props) {
   const [status, setStatus] = useState<ApplicationStatus>("Applied");
   const isFormValid = company.trim().length > 0 && role.trim().length > 0; //表单验证：公司和职位不能为空（去掉前后空格）
 
-  const handleSubmit = () => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+    //SubmitEvent：React 的表单提交事件类型。
+    //<HTMLFormElement>：说明处理事件的元素是 <form></form>
+    event.preventDefault(); //阻止浏览器默认的表单提交行为，让 React 处理添加操作
+
     if (!isFormValid) return;
 
     onAdd({
@@ -32,33 +38,46 @@ export default function ApplicationForm({ onAdd }: Props) {
   };
 
   return (
-    <div className="application-form mb-6 space-y-4 rounded-lg border p-4">
-      <div>
-        <label className="mb-1 block text-sm font-medium">Company</label>
-
+    <form className="application-form" onSubmit={handleSubmit}>
+      <div className="application-form__field">
+        <label
+          htmlFor="application-company"
+          className="application-form__label"
+        >
+          Company
+        </label>
         <input
+          id="application-company"
+          className="application-form__input"
           value={company}
           onChange={(e) => setCompany(e.target.value)}
           placeholder="e.g. Amazon"
-          className="w-full rounded border p-2"
+          required //浏览器的必填检查
+          autoFocus //弹窗打开后，让用户直接填写公司
         />
       </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium">Role</label>
-
+      <div className="application-form__field">
+        <label htmlFor="application-role" className="application-form__label">
+          Role
+        </label>
         <input
+          id="application-role"
+          className="application-form__input"
           value={role}
           onChange={(e) => setRole(e.target.value)}
           placeholder="e.g. Frontend Intern"
-          className="w-full rounded border p-2"
+          required
         />
       </div>
 
-      <div>
-        <label className="mb-1 block text-sm font-medium">Status</label>
-
+      <div className="application-form__field">
+        <label htmlFor="application-status" className="application-form__label">
+          Status
+        </label>
         <select
+          id="application-status"
+          className="application-form__input"
           value={status}
           onChange={(e) => {
             const value = e.target.value;
@@ -67,7 +86,6 @@ export default function ApplicationForm({ onAdd }: Props) {
               setStatus(value);
             }
           }}
-          className="w-full rounded border p-2"
         >
           <option value="Wishlist">Wishlist</option>
           <option value="Applied">Applied</option>
@@ -75,26 +93,25 @@ export default function ApplicationForm({ onAdd }: Props) {
           <option value="Interview">Interview</option>
           <option value="Offer">Offer</option>
           <option value="Rejected">Rejected</option>
+          <option value="Unknown">Unknown</option>
         </select>
       </div>
 
       {!isFormValid && (
-        <p className="text-sm text-gray-500">
+        <p className="application-form__hint">
           Please enter both company and role.
         </p>
       )}
 
-      <button
-        onClick={handleSubmit}
-        disabled={!isFormValid}
-        className="
-                    rounded bg-black px-4 py-2 text-white
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                "
-      >
-        Add Application
-      </button>
-    </div>
+      <div className="application-form__actions">
+        <button
+          type="submit" //按钮提交表单，不再需要 onClick
+          disabled={!isFormValid}
+          className="application-form__submit"
+        >
+          Add application
+        </button>
+      </div>
+    </form>
   );
 }

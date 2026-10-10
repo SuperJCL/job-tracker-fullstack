@@ -11,6 +11,7 @@ import FilterBar from "@/components/FilterBar";
 import StatBoard from "@/components/StatBoard";
 import ApplicationForm from "@/components/ApplicationForm";
 import { mockApplications } from "@/mock/applicationsMock";
+import Modal from "@/components/Modal/Modal";
 
 import "./applications.scss";
 
@@ -20,6 +21,7 @@ export default function ApplicationsPage() {
 
   const [filter, setFilter] = useState<ApplicationStatusFilter>("All"); //仅允许传7种类型
   const [search, setSearch] = useState("");
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
   /**
    * 添加新的申请
@@ -28,10 +30,11 @@ export default function ApplicationsPage() {
   const addApplication = (input: CreateApplicationInput) => {
     const newApplication: Application = {
       ...input,
-      id: crypto.randomUUID(), //生成唯一id
+      id: crypto.randomUUID(),
     };
 
     setApplications((prev) => [...prev, newApplication]);
+    setIsAddDialogOpen(false);
   };
 
   /**
@@ -66,10 +69,26 @@ export default function ApplicationsPage() {
   return (
     <main className="application-page">
       <header className="application-page__header">
-        <h1 className="application-page__title">Applications</h1>
-        <p className="application-page__description">
-          Your next opportunity starts here.
-        </p>
+        <div>
+          <h1 className="application-page__title">Applications</h1>
+          <p className="application-page__description">
+            Your next opportunity starts here.
+          </p>
+        </div>
+
+        <Modal
+          open={isAddDialogOpen}
+          onOpenChange={setIsAddDialogOpen}
+          title="Add application"
+          description="Enter the company, role, and current application status."
+          trigger={
+            <button type="button" className="application-page__add-button">
+              + Add application
+            </button>
+          }
+        >
+          <ApplicationForm onAdd={addApplication} />
+        </Modal>
       </header>
 
       <section
@@ -138,7 +157,7 @@ export default function ApplicationsPage() {
               </h2>
               <p className="application-page__empty-description">
                 {applications.length === 0
-                  ? "Add your first application below to get started."
+                  ? "Click Add application to get started."
                   : "Try changing your search keyword or status filter."}
               </p>
             </div>
@@ -152,19 +171,6 @@ export default function ApplicationsPage() {
             ))
           )}
         </div>
-      </section>
-
-      <section
-        className="application-page__form-section"
-        aria-labelledby="new-application-title"
-      >
-        <h2
-          id="new-application-title"
-          className="application-page__section-title"
-        >
-          Add application
-        </h2>
-        <ApplicationForm onAdd={addApplication} />
       </section>
     </main>
   );

@@ -5,6 +5,11 @@
   padding: 40px 32px 64px;
 
   &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     margin-bottom: 28px;
   }
 
@@ -112,6 +117,73 @@
     &__search {
       flex-basis: 100%;
       max-width: none;
+    }
+  }
+
+  &__add-button {
+    padding: 9px 14px;
+    border: 0;
+    border-radius: 6px;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font: inherit;
+    font-weight: 500;
+
+    &:hover {
+      background: var(--primary-hover);
+    }
+  }
+
+  //模态弹窗样式
+  &__dialog {
+    width: calc(100% - 32px);
+    max-width: 480px;
+    max-height: calc(
+      100dvh - 48px
+    ); //100dvh 表示视口的高度，减去 48px 是为了给模态弹窗留出一定的上下间距
+    margin: auto;
+    padding: 24px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--foreground);
+
+    //模态弹窗遮罩
+    &::backdrop {
+      background: rgb(15 18 30 / 40%);
+    }
+  }
+
+  &__dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  &__dialog-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  &__dialog-close {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted-foreground);
+    font-size: 24px;
+
+    &:hover {
+      background: var(--muted);
+      color: var(--foreground);
     }
   }
 }
