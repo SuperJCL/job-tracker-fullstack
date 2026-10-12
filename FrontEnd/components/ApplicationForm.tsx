@@ -1,11 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import type {
-  ApplicationStatus,
-  CreateApplicationInput,
+
+import {
+  validateApplication,
+  type ApplicationFormErrors,
+} from "@/lib/validation/application";
+import {
+  isApplicationStatus,
+  type ApplicationStatus,
+  type CreateApplicationInput,
 } from "@/types/application";
-import { isApplicationStatus } from "@/types/application";
 import type { SubmitEvent } from "react";
 import "./ApplicationForm.scss";
 
@@ -17,28 +22,39 @@ export default function ApplicationForm({ onAdd }: Props) {
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
   const [status, setStatus] = useState<ApplicationStatus>("Applied");
-  const isFormValid = company.trim().length > 0 && role.trim().length > 0; //表单验证：公司和职位不能为空（去掉前后空格）
+  const [errors, setErrors] = useState<ApplicationFormErrors>({});
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     //SubmitEvent：React 的表单提交事件类型。
     //<HTMLFormElement>：说明处理事件的元素是 <form></form>
     event.preventDefault(); //阻止浏览器默认的表单提交行为，让 React 处理添加操作
 
-    if (!isFormValid) return;
-
-    onAdd({
-      company: company.trim(),
-      role: role.trim(),
+    const result = validateApplication({
+      company,
+      role,
       status,
     });
 
+    if (!result.success) {
+      setErrors(result.errors);
+      return;
+    }
+
+    onAdd(result.data);
+
+    setErrors({});
     setCompany("");
     setRole("");
     setStatus("Applied");
   };
 
   return (
-    <form className="application-form" onSubmit={handleSubmit}>
+    <form
+      className="application-form"
+      onSubmit={handleSubmit}
+      autoComplete="off"
+      noValidate //禁用浏览器默认的表单验证，使用自定义验证
+    >
       <div className="application-form__field">
         <label
           htmlFor="application-company"
@@ -50,11 +66,33 @@ export default function ApplicationForm({ onAdd }: Props) {
           id="application-company"
           className="application-form__input"
           value={company}
-          onChange={(e) => setCompany(e.target.value)}
+          autoComplete="off"
+          onChange={(e) => {
+            const value = e.target.value;
+            setCompany(value);
+
+            if (errors.company) {
+              const result = validateApplication({
+                company: value,
+                role,
+                status,
+              });
+              setErrors(result.success ? {} : result.errors);
+            }
+          }}
           placeholder="e.g. Amazon"
           required //浏览器的必填检查
           autoFocus //弹窗打开后，让用户直接填写公司
+          aria-invalid={Boolean(errors.company)} //如果有错误，aria-invalid 为 true
+          aria-describedby={
+            errors.company ? "application-company-error" : undefined
+          } //如果有错误，aria-describedby 指向错误提示的 id
         />
+        {errors.company && (
+          <p id="application-company-error" className="application-form__error">
+            {errors.company}
+          </p>
+        )}
       </div>
 
       <div className="application-form__field">
@@ -65,10 +103,32 @@ export default function ApplicationForm({ onAdd }: Props) {
           id="application-role"
           className="application-form__input"
           value={role}
-          onChange={(e) => setRole(e.target.value)}
+          autoComplete="off"
+          onChange={(e) => {
+            const value = e.target.value;
+            setRole(value);
+
+            if (errors.role) {
+              const result = validateApplication({
+                company,
+                role: value,
+                status,
+              });
+
+              setErrors(result.success ? {} : result.errors);
+            }
+          }}
           placeholder="e.g. Frontend Intern"
           required
+          aria-invalid={Boolean(errors.role)}
+          aria-describedby={errors.role ? "application-role-error" : undefined}
         />
+
+        {errors.role && (
+          <p id="application-role-error" className="application-form__error">
+            {errors.role}
+          </p>
+        )}
       </div>
 
       <div className="application-form__field">
@@ -79,11 +139,25 @@ export default function ApplicationForm({ onAdd }: Props) {
           id="application-status"
           className="application-form__input"
           value={status}
+          aria-invalid={Boolean(errors.status)}
+          aria-describedby={
+            errors.status ? "application-status-error" : undefined
+          }
           onChange={(e) => {
             const value = e.target.value;
 
             if (isApplicationStatus(value)) {
               setStatus(value);
+
+              if (errors.status) {
+                const result = validateApplication({
+                  company,
+                  role,
+                  status: value,
+                });
+
+                setErrors(result.success ? {} : result.errors);
+              }
             }
           }}
         >
@@ -95,18 +169,16 @@ export default function ApplicationForm({ onAdd }: Props) {
           <option value="Rejected">Rejected</option>
           <option value="Unknown">Unknown</option>
         </select>
+        {errors.status && (
+          <p id="application-status-error" className="application-form__error">
+            {errors.status}
+          </p>
+        )}
       </div>
-
-      {!isFormValid && (
-        <p className="application-form__hint">
-          Please enter both company and role.
-        </p>
-      )}
 
       <div className="application-form__actions">
         <button
           type="submit" //按钮提交表单，不再需要 onClick
-          disabled={!isFormValid}
           className="application-form__submit"
         >
           Add application
